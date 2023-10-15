@@ -3,6 +3,7 @@ package ch.bfh.ti.plantwaterapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    PlantOverview()
                 }
             }
         }
@@ -30,17 +31,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun PlantOverview(modifier: Modifier = Modifier){
+    Column {
+        PlantOverviewItem(Plant("Cactus"))
+        PlantOverviewItem(Plant("Bonsai"))
+    }
 }
+
+@Composable
+fun PlantOverviewItem(plant: Plant, modifier: Modifier = Modifier) {
+    Text(plant.name)
+}
+
+data class Plant(val name: String)
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     PlantWaterAppTheme {
-        Greeting("Android")
+        PlantOverview()
     }
 }
