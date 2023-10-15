@@ -40,9 +40,13 @@ fun PlantOverview(modifier: Modifier = Modifier){
 
 @Composable
 fun PlantOverviewItem(plant: Plant, modifier: Modifier = Modifier) {
+    /** todo: add picture, name and location of a plant, use the Row-Composable. If the plant has not been watered, add a button to the row (Without functionality).
+     *  It has 3 images in the resources. For example with the ID: R.drawable.cactus
+     */
     Text(plant.name)
 }
 
+// Todo: extend the plant data class
 data class Plant(val name: String)
 
 @Preview(showBackground = true)
