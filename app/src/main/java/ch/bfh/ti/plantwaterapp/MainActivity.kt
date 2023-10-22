@@ -1,74 +1,54 @@
 package ch.bfh.ti.plantwaterapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import ch.bfh.ti.plantwaterapp.ui.theme.PlantWaterAppTheme
-import kotlin.math.log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import ch.bfh.ti.plantwaterapp.model.Plant
+import ch.bfh.ti.plantwaterapp.ui.plantdetail.DetailScreen
+import ch.bfh.ti.plantwaterapp.ui.plantoverview.PlantOverviewScreen
+import ch.bfh.ti.plantwaterapp.ui.planttodo.TodoScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PlantWaterAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    PlantOverview()
-                }
+            var screen by rememberSaveable { mutableStateOf(1) }
+            var plant by rememberSaveable { mutableStateOf("") }
+            when (screen) {
+                1 -> TodoScreen(
+                    onNavigationClick = { screen = 3 },
+                    onNavigateToDetail = { plantName ->
+                        plant = plantName
+                        screen = 2
+                    })
+
+                2 -> DetailScreen(plantNane = plant, onNavigateBack = { screen = 1 })
+                3 -> PlantOverviewScreen(onNavigationClick = { screen = 1 })
             }
         }
     }
 }
 
-@Composable
-fun PlantOverview(modifier: Modifier = Modifier) {
-    Column {
-        PlantOverviewItem(Plant("Cactus", "Living Room", R.drawable.cactus, false))
-        PlantOverviewItem(Plant("Bonsai", "Floor", R.drawable.bonsai, true))
-    }
-}
 
-@Composable
-fun PlantOverviewItem(plant: Plant, modifier: Modifier = Modifier) {
-    Row {
-        Image(
-            painter = painterResource(id = plant.imageId),
-            contentDescription = "Plant: ${plant.name}"
-        )
-        Column {
-            Text(plant.name)
-            Text(plant.location)
-        }
-        if (!plant.isWatered) {
-            Button(onClick = { Log.i("MainActivity", "Plant is watered") }) {
-                Text("water")
-            }
-        }
-    }
-}
-
-data class Plant(val name: String, val location: String, val imageId: Int, val isWatered: Boolean)
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PlantWaterAppTheme {
-        PlantOverview()
-    }
-}
+public val dummyPlants = listOf<Plant>(
+    Plant("Aloe Vera", "Living Room", R.drawable.aloe_vera, false),
+    Plant("Cactus", "Living Room", R.drawable.cactus, false),
+    Plant("Pilea Cadierei", "Living Room", R.drawable.pilea_cadierei, false),
+    Plant("Bonsai", "Living Room", R.drawable.bonsai, true),
+    Plant("Parlor Palm", "Floor", R.drawable.parlor_palm, false),
+    Plant("Basil", "Kitchen", R.drawable.basil, true),
+    Plant("Parsley", "Kitchen", R.drawable.parsley, false),
+    Plant("Cactus", "Living Room", R.drawable.cactus, false),
+    Plant("Cactus", "Living Room", R.drawable.cactus, false),
+    Plant("Bonsai", "Floor", R.drawable.bonsai, true),
+    Plant("Cactus", "Living Room", R.drawable.cactus, false),
+    Plant("Pilea Cadierei", "Bedroom", R.drawable.pilea_cadierei, false),
+    Plant("Parlor Palm", "Bedroom", R.drawable.parlor_palm, false),
+    Plant("Aloe Vera", "Bedroom", R.drawable.aloe_vera, false),
+    Plant("Basil", "Kitchen", R.drawable.basil, true),
+    Plant("Parsley", "Kitchen", R.drawable.parsley, false)
+)

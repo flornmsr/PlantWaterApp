@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PlantWaterApp</string>
+    <string name="bottom_navigation_all_plants">Plants</string>
+    <string name="bottom_navigation_todo">Todo</string>
+    <string name="todo_screen_title">Tasks</string>
+    <string name="todo_done">Done</string>
+    <string name="todo_undone">Undo</string>
+    <string name="todo_delete">Delete</string>
+    <string name="todo_edit">Edit</string>
+    <string name="detail_view_plant_description_placeholder">In this description section, you\'ll find a treasure trove of knowledge about your chosen houseplant. From essential care instructions to fascinating tidbits about its origins, you\'ll have everything you need to nurture your green companion to perfection.</string>
+    <string name="common_desc_navigate_back">Navigate back</string>
 </resources>
