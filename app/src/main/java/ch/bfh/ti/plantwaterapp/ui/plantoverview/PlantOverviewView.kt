@@ -1,5 +1,12 @@
 package ch.bfh.ti.plantwaterapp.ui.plantoverview
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -97,12 +104,24 @@ fun PlantOverviewPerLocation(modifier: Modifier = Modifier) {
         }
 
         dummyPlants
-            .filter { activeLocations.contains(it.location) }
             .groupBy { it.location }
             .forEach { (key, value) ->
                 item {
-                    PlantOverviewSection(title = key) {
-                        PlantOverviewCardGrid(plants = value)
+                    // AnimatedVisibility with custom animations for entering and exiting
+                    AnimatedVisibility(
+                        // the item is visible if its key (location) is a memeber of the activeLocations-List
+                        visible = activeLocations.contains(key),
+                        // Duration of the vertical slide in is 1s and it starts with an offset of 600px.
+                        // So it moves from 600px below up to the final position in 1s.
+                        // Fade in with the initial alpha of 0.3f
+                        enter = slideInVertically(animationSpec = tween(durationMillis = 1000), initialOffsetY = { +600 }) +
+                                fadeIn( initialAlpha = 0.3f),
+                        // Chain animations with "+"
+                        exit = slideOutVertically() + shrinkHorizontally() + fadeOut()
+                    ) {
+                        PlantOverviewSection(title = key) {
+                            PlantOverviewCardGrid(plants = value)
+                        }
                     }
                 }
             }

@@ -9,4 +9,9 @@
     <string name="todo_edit">Edit</string>
     <string name="detail_view_plant_description_placeholder">In this description section, you\'ll find a treasure trove of knowledge about your chosen houseplant. From essential care instructions to fascinating tidbits about its origins, you\'ll have everything you need to nurture your green companion to perfection.</string>
     <string name="common_desc_navigate_back">Navigate back</string>
+    <string name="common_desc_state_icon_plant">This plant icon represents the watering status in colour.</string>
+    <string name="common_desc_state_icon_water_needed">The plant needs water</string>
+    <string name="common_desc_state_icon_water_not_needed">The plant has enough water</string>
+    <string name="common_desc_toggle_details">Toggle Details</string>
+    <string name="overview_noting_selected">Noting selected</string>
 </resources>

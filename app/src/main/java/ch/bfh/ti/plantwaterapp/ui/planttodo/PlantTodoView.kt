@@ -102,7 +102,7 @@ fun TodoList(
                 // cardEndContent = { WateringStateIconRow(...) }
             ) {
                 WateringStateIconRow(
-                    wateringState = item.isWatered,
+                    isWateredState = item.isWatered,
                     modifier = Modifier.padding(end = 8.dp)
                 )
             }

@@ -95,7 +95,7 @@ fun PlantCardPreview() {
             onNavigateToDetail = {})
             {
                 WateringStateIconRow(
-                    wateringState = false,
+                    isWateredState = false,
                     modifier = Modifier.padding(end = 8.dp)
                 )
             }
