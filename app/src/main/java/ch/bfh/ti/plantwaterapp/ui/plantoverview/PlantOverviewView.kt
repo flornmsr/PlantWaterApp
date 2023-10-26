@@ -2,22 +2,38 @@ package ch.bfh.ti.plantwaterapp.ui.plantoverview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ch.bfh.ti.plantwaterapp.R
 import ch.bfh.ti.plantwaterapp.dummyPlants
 import ch.bfh.ti.plantwaterapp.model.Plant
 import ch.bfh.ti.plantwaterapp.ui.common.PlantCard
@@ -51,13 +67,37 @@ fun PlantOverviewScreen(onNavigationClick: () -> Unit) {
  */
 @Composable
 fun PlantOverviewPerLocation(modifier: Modifier = Modifier) {
+
+    val allLocations = dummyPlants.map { it.location }.distinct()
+
+    var activeLocations by rememberSaveable {
+        mutableStateOf(allLocations)
+    }
+
     // Lazy Column is used, so only Elements which are visible are rendered
     LazyColumn(
         contentPadding = PaddingValues(bottom = 16.dp),
         // add the modifier here
         modifier = modifier
     ) {
+        item {
+            PlantOverviewSection(title = "Filter") {
+                PlantFilter(
+                    categories = allLocations,
+                    activeCategories = activeLocations,
+                    onFilterChanged = { clickedFilter ->
+                        activeLocations = if (activeLocations.contains(clickedFilter)) {
+                            activeLocations.filter { name -> name != clickedFilter }
+                        } else {
+                            activeLocations + clickedFilter
+                        }
+                    }
+                )
+            }
+        }
+
         dummyPlants
+            .filter { activeLocations.contains(it.location) }
             .groupBy { it.location }
             .forEach { (key, value) ->
                 item {
@@ -130,6 +170,83 @@ fun PlantOverviewSection(
         content()
     }
 }
+
+/**
+ * A composable function for creating a filter-bar usinf FlowRow with [PlantFilterChip]-Items
+ *
+ * @param categories A list of filter categories to display.
+ * @param activeCategories A list of currently active filter categories.
+ * @param onFilterChanged A lambda function that will be called when a filter category is changed (selected/unselected).
+ * @param modifier A modifier to customize the appearance and layout.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun PlantFilter(
+    categories: List<String>,
+    activeCategories: List<String>,
+    onFilterChanged: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(horizontal = 16.dp, vertical = 0.dp)
+            .fillMaxWidth()
+    ) {
+        // If there are too many items for one row, additional rows are automatically created and the items added there
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+        ) {
+            categories.forEach {
+                PlantFilterChip(
+                    filterName = it,
+                    selected = activeCategories.contains(it),
+                    onClick = onFilterChanged
+                )
+            }
+        }
+        if (activeCategories.isEmpty()) {
+            Text(text = stringResource(R.string.overview_noting_selected), color = MaterialTheme.colorScheme.error)
+        }
+    }
+}
+
+
+/**
+ * A composable function for displaying a filter chip representing a filter category for plant filtering.
+ *
+ * @param filterName The name of the filter category to display in the chip.
+ * @param selected Indicates whether the filter chip is selected or not.
+ * @param onClick A lambda function to be called when the filter chip is clicked.
+ * @param modifier A modifier to customize the appearance and layout of the filter chip.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PlantFilterChip(
+    filterName: String,
+    selected: Boolean,
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FilterChip(
+        selected = selected,
+        onClick = { onClick(filterName) },
+        label = { Text(text = filterName) },
+        leadingIcon = if (selected) {
+            {
+                Icon(
+                    imageVector = Icons.Filled.Done,
+                    contentDescription = "Done icon",
+                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                )
+            }
+        } else {
+            null
+        },
+        modifier = modifier
+    )
+}
+
 
 @Preview
 @Composable
