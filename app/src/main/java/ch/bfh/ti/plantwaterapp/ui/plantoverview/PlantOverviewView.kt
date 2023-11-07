@@ -29,7 +29,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,36 +43,35 @@ import ch.bfh.ti.plantwaterapp.R
 import ch.bfh.ti.plantwaterapp.dummyPlants
 import ch.bfh.ti.plantwaterapp.model.Plant
 import ch.bfh.ti.plantwaterapp.ui.common.PlantCard
-import ch.bfh.ti.plantwaterapp.ui.common.PlantWaterAppNavigation
-import ch.bfh.ti.plantwaterapp.ui.common.PlantWaterAppTopBar
-import ch.bfh.ti.plantwaterapp.ui.theme.PlantWaterAppTheme
 
 
 /**
- * todo: will be finished when proper navigation is implemented
- */
-@Composable
-fun PlantOverviewScreen(onNavigationClick: () -> Unit) {
-    PlantWaterAppTheme {
-        Scaffold(
-            bottomBar = { PlantWaterAppNavigation(onNavigationClick) },
-            topBar = { PlantWaterAppTopBar() },
-        ) { padding ->
-            // this padding is important. vertical padding is added at the top (height of TopBar) and bottom (height of bottomBar)
-            PlantOverviewPerLocation(Modifier.padding(padding))
-        }
-    }
-}
-
-/**
- * Composable that displays plant overview sections grouped by location
+ * Composable that displays plant overview screen
  *
+ * @param onNavigateToDetail Callback function to navigate to the detail view of a to-do item.
  * @param modifier Modifier for custom styling and layout options.
  *                 It's best practice to use this parameter to allow callers to modify the composable's appearance
  *                 So the composable is more flexible and reusable
  */
 @Composable
-fun PlantOverviewPerLocation(modifier: Modifier = Modifier) {
+fun PlantOverviewScreen(
+    onNavigateToDetail: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    PlantOverviewPerLocation(modifier = modifier, onNavigateToDetail = onNavigateToDetail)
+}
+
+/**
+ * Composable that displays plant overview sections grouped by location
+ *
+ * @param onNavigateToDetail Callback function to navigate to the detail view of a to-do item.
+ * @param modifier Modifier for custom styling and layout options.
+ */
+@Composable
+fun PlantOverviewPerLocation(
+    onNavigateToDetail: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
 
     val allLocations = dummyPlants.map { it.location }.distinct()
 
@@ -114,13 +112,18 @@ fun PlantOverviewPerLocation(modifier: Modifier = Modifier) {
                         // Duration of the vertical slide in is 1s and it starts with an offset of 600px.
                         // So it moves from 600px below up to the final position in 1s.
                         // Fade in with the initial alpha of 0.3f
-                        enter = slideInVertically(animationSpec = tween(durationMillis = 1000), initialOffsetY = { +600 }) +
-                                fadeIn( initialAlpha = 0.3f),
+                        enter = slideInVertically(
+                            animationSpec = tween(durationMillis = 1000),
+                            initialOffsetY = { +600 }) +
+                                fadeIn(initialAlpha = 0.3f),
                         // Chain animations with "+"
                         exit = slideOutVertically() + shrinkHorizontally() + fadeOut()
                     ) {
                         PlantOverviewSection(title = key) {
-                            PlantOverviewCardGrid(plants = value)
+                            PlantOverviewCardGrid(
+                                plants = value,
+                                onNavigateToDetail = onNavigateToDetail
+                            )
                         }
                     }
                 }
@@ -137,6 +140,7 @@ fun PlantOverviewPerLocation(modifier: Modifier = Modifier) {
 @Composable
 fun PlantOverviewCardGrid(
     plants: List<Plant>,
+    onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyHorizontalGrid(
@@ -154,7 +158,7 @@ fun PlantOverviewCardGrid(
             PlantCard(
                 drawable = plant.imageId,
                 title = plant.name,
-                onNavigateToDetail = {},
+                onNavigateToDetail = onNavigateToDetail,
                 modifier = Modifier.width(200.dp)
             )
         }
@@ -225,7 +229,10 @@ fun PlantFilter(
             }
         }
         if (activeCategories.isEmpty()) {
-            Text(text = stringResource(R.string.overview_noting_selected), color = MaterialTheme.colorScheme.error)
+            Text(
+                text = stringResource(R.string.overview_noting_selected),
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }
@@ -270,5 +277,5 @@ fun PlantFilterChip(
 @Preview
 @Composable
 fun PlantOverviewScreenPreview() {
-    PlantOverviewScreen(onNavigationClick = {})
+    PlantOverviewScreen(onNavigateToDetail = {})
 }

@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,40 +23,16 @@ import androidx.compose.ui.unit.dp
 import ch.bfh.ti.plantwaterapp.R
 import ch.bfh.ti.plantwaterapp.dummyPlants
 import ch.bfh.ti.plantwaterapp.ui.common.PlantCard
-import ch.bfh.ti.plantwaterapp.ui.common.PlantWaterAppNavigation
-import ch.bfh.ti.plantwaterapp.ui.common.PlantWaterAppTopBar
 import ch.bfh.ti.plantwaterapp.ui.common.WateringStateIconRow
-import ch.bfh.ti.plantwaterapp.ui.theme.PlantWaterAppTheme
 
 /**
- * todo: will be finished when proper navigation is implemented
- */
-@Composable
-fun TodoScreen(
-    onNavigateToDetail: (String) -> Unit,
-    onNavigationClick: () -> Unit
-) {
-    PlantWaterAppTheme {
-        Scaffold(
-            bottomBar = { PlantWaterAppNavigation(onNavigationClick) },
-            topBar = { PlantWaterAppTopBar() },
-        ) { padding ->
-            TodoScreenContent(
-                onNavigateToDetail = onNavigateToDetail,
-                Modifier.padding(padding) // this padding is important. vertical padding is added at the top (height of TopBar) and bottom (height of bottomBar)
-            )
-        }
-    }
-}
-
-/**
- * Composable that represents the content of the to-do list screen, including the header and the list of to-do items.
+ * Composable that represents the to-do list screen
  *
  * @param onNavigateToDetail Callback function to navigate to the detail view of a to-do item.
  * @param modifier Modifier for custom styling and layout options.
  */
 @Composable
-fun TodoScreenContent(
+fun TodoScreen(
     onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -73,6 +48,7 @@ fun TodoScreenContent(
         TodoList(onNavigateToDetail = onNavigateToDetail)
     }
 }
+
 
 /**
  * Composable that displays a list of to-do items using a LazyColumn.
@@ -145,5 +121,5 @@ fun TodoHeader(taskProgressPercentage: Int, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun TodoScreenPreview() {
-    TodoScreen(onNavigationClick = {}, onNavigateToDetail = {})
+    TodoScreen(onNavigateToDetail = {})
 }
