@@ -1,5 +1,6 @@
 package ch.bfh.ti.plantwaterapp.ui.planttodo
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,9 +13,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -45,7 +48,7 @@ fun TodoScreen(
         modifier = modifier.padding(horizontal = 8.dp)
     ) {
         // Calculate the percentage of watering tasks done
-        val taskProgressPercentage = plants.count { it.isWatered } * 100 / plants.count()
+        val taskProgressPercentage: Float by animateFloatAsState( (plants.count { it.isWatered }).toFloat() / plants.count().toFloat())
         TodoHeader(
             taskProgressPercentage = taskProgressPercentage,
             Modifier.padding(top = 16.dp, bottom = 8.dp)
@@ -108,7 +111,7 @@ fun TodoList(
  * @param modifier Modifier for custom styling and layout options.
  */
 @Composable
-fun TodoHeader(taskProgressPercentage: Int, modifier: Modifier = Modifier) {
+fun TodoHeader(taskProgressPercentage: Float, modifier: Modifier = Modifier) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         modifier = modifier
@@ -126,8 +129,9 @@ fun TodoHeader(taskProgressPercentage: Int, modifier: Modifier = Modifier) {
                 text = stringResource(id = R.string.todo_screen_title),
                 style = MaterialTheme.typography.titleLarge,
             )
-            Text(text = "$taskProgressPercentage%")
+            Text(text = "%.1f%%".format(taskProgressPercentage*100))
         }
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = taskProgressPercentage)
     }
 }
 
