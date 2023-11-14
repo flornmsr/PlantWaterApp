@@ -19,7 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ch.bfh.ti.plantwaterapp.R
+import ch.bfh.ti.plantwaterapp.dummyPlants
 import ch.bfh.ti.plantwaterapp.ui.theme.PlantWaterAppTheme
 
 
@@ -30,7 +30,7 @@ import ch.bfh.ti.plantwaterapp.ui.theme.PlantWaterAppTheme
  *                 Indicates that the param is expected to be a resource reference to a drawable in your Android application.
  *                 It's commonly used to improve code clarity and provide static analysis tools with information about the expected type of resource.
  * @param title    Name of the plant
- * @param onNavigateToDetail onNavigateToDetail Callback function to handle navigation to the plant detail screen when clicking on the card.
+ * @param onClick Callback function to handle action when clicking on the card.
  *                           It should take a single parameter, which is the title of the plant to navigate to.
  * @param modifier Modifier for customizing the appearance and behavior of the element, should be the first optional parameter!
  * @param subtitle Optional subtitle, e.g., the location of the plant.
@@ -41,14 +41,14 @@ import ch.bfh.ti.plantwaterapp.ui.theme.PlantWaterAppTheme
 fun PlantCard(
     @DrawableRes drawable: Int,
     title: String,
-    onNavigateToDetail: (String) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     cardEndContent: @Composable () -> Unit = {}
 ) {
     Card(
         shape = MaterialTheme.shapes.medium,
-        onClick = { onNavigateToDetail(title) },
+        onClick = { onClick() },
         modifier = modifier
     ) {
         Row(
@@ -88,16 +88,18 @@ fun PlantCard(
 @Composable
 fun PlantCardPreview() {
     PlantWaterAppTheme {
+        val dummyPlant = dummyPlants.get(0)
         PlantCard(
-            drawable = R.drawable.bonsai,
-            title = "My lovely Bonsai",
-            subtitle = "kitchen",
-            onNavigateToDetail = {})
-            {
-                WateringStateIconRow(
-                    isWateredState = false,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-            }
+            drawable = dummyPlant.imageId,
+            title = dummyPlant.name,
+            subtitle = dummyPlant.location,
+            onClick = {})
+        {
+            WateringStateIconRow(
+                isWateredState = dummyPlant.isWatered,
+                onClick = {},
+                modifier = Modifier.padding(end = 8.dp)
+            )
+        }
     }
 }

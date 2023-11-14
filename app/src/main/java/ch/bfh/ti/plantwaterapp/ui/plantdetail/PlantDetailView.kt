@@ -39,27 +39,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.bfh.ti.plantwaterapp.R
-import ch.bfh.ti.plantwaterapp.dummyPlants
 import ch.bfh.ti.plantwaterapp.model.Plant
 import ch.bfh.ti.plantwaterapp.ui.common.IconTextButton
 import ch.bfh.ti.plantwaterapp.ui.common.WateringStateIconRow
 import ch.bfh.ti.plantwaterapp.ui.theme.PlantWaterAppTheme
-
-/**
- * TODO: will be finished when proper navigation is implemented
- */
-@Composable
-fun DetailScreen(
-    onNavigateBack: () -> Unit,
-    plantNane: String
-) {
-    PlantWaterAppTheme {
-        dummyPlants.find { it.name == plantNane }?.let { plant ->
-            PlantDetails(plant = plant, onNavigateBack = onNavigateBack)
-        }
-    }
-}
-
 
 /**
  * Composable that displays details of a plant.
@@ -69,7 +52,7 @@ fun DetailScreen(
  * @param modifier Modifier for custom styling and layout options.
  */
 @Composable
-fun PlantDetails(
+fun PlantDetailsScreen(
     plant: Plant,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -267,8 +250,8 @@ fun PlantActionBar(
 @Composable
 private fun PlantDetailContentPreview() {
     PlantWaterAppTheme {
-        PlantDetails(
-            plant = Plant("Cactus", "Living Room", R.drawable.cactus, false),
+        PlantDetailsScreen(
+            plant = Plant(1,"Cactus", "Living Room", R.drawable.cactus, false),
             onNavigateBack = {}
         )
     }

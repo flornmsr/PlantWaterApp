@@ -1,6 +1,7 @@
 package ch.bfh.ti.plantwaterapp.ui.common
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WaterDrop
@@ -19,17 +20,20 @@ import ch.bfh.ti.plantwaterapp.R
  *
  * @param isWateredState A boolean value indicating whether the plant needs watering (false) or not (true).
  * @param modifier Modifier for custom styling and layout options.
+ * @param onClick callback which can be used for click events
  */
 @Composable
 fun WateringStateIconRow(
     isWateredState: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
 
     // the color variable is animated. If the isWateredState changes, then the color changes also. Changing the colour is animated and therefore smoother
     val color by animateColorAsState(if(isWateredState) Color(0.31f, 0.765f, 0.969f, 1.0f) else MaterialTheme.colorScheme.error)
 
-    Row(modifier) {
+    // make the row clickable with this modifier
+    Row(modifier.clickable {  onClick() }) {
         Icon(
             painterResource(id = R.drawable.potted_plant),
             contentDescription = stringResource(id = R.string.common_desc_state_icon_plant),

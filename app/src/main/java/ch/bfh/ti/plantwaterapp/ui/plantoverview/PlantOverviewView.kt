@@ -46,34 +46,20 @@ import ch.bfh.ti.plantwaterapp.ui.common.PlantCard
 
 
 /**
- * Composable that displays plant overview screen
+ * Composable that displays plant overview sections grouped by location as plant overview screen
  *
+ * @param plants list of all plants
+ * @param allLocations list of all locations witch have plants
  * @param onNavigateToDetail Callback function to navigate to the detail view of a to-do item.
  * @param modifier Modifier for custom styling and layout options.
- *                 It's best practice to use this parameter to allow callers to modify the composable's appearance
- *                 So the composable is more flexible and reusable
  */
 @Composable
 fun PlantOverviewScreen(
-    onNavigateToDetail: (String) -> Unit,
+    plants: List<Plant>,
+    allLocations: List<String>,
+    onNavigateToDetail: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PlantOverviewPerLocation(modifier = modifier, onNavigateToDetail = onNavigateToDetail)
-}
-
-/**
- * Composable that displays plant overview sections grouped by location
- *
- * @param onNavigateToDetail Callback function to navigate to the detail view of a to-do item.
- * @param modifier Modifier for custom styling and layout options.
- */
-@Composable
-fun PlantOverviewPerLocation(
-    onNavigateToDetail: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-
-    val allLocations = dummyPlants.map { it.location }.distinct()
 
     var activeLocations by rememberSaveable {
         mutableStateOf(allLocations)
@@ -101,7 +87,7 @@ fun PlantOverviewPerLocation(
             }
         }
 
-        dummyPlants
+        plants
             .groupBy { it.location }
             .forEach { (key, value) ->
                 item {
@@ -140,7 +126,7 @@ fun PlantOverviewPerLocation(
 @Composable
 fun PlantOverviewCardGrid(
     plants: List<Plant>,
-    onNavigateToDetail: (String) -> Unit,
+    onNavigateToDetail: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyHorizontalGrid(
@@ -158,7 +144,7 @@ fun PlantOverviewCardGrid(
             PlantCard(
                 drawable = plant.imageId,
                 title = plant.name,
-                onNavigateToDetail = onNavigateToDetail,
+                onClick = {onNavigateToDetail(plant.id)},
                 modifier = Modifier.width(200.dp)
             )
         }
@@ -277,5 +263,5 @@ fun PlantFilterChip(
 @Preview
 @Composable
 fun PlantOverviewScreenPreview() {
-    PlantOverviewScreen(onNavigateToDetail = {})
+    PlantOverviewScreen(plants = dummyPlants, allLocations = dummyPlants.map { it.location }.distinct(), onNavigateToDetail = {})
 }

@@ -22,30 +22,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.bfh.ti.plantwaterapp.R
 import ch.bfh.ti.plantwaterapp.dummyPlants
+import ch.bfh.ti.plantwaterapp.model.Plant
 import ch.bfh.ti.plantwaterapp.ui.common.PlantCard
 import ch.bfh.ti.plantwaterapp.ui.common.WateringStateIconRow
 
 /**
  * Composable that represents the to-do list screen
  *
+ * @param plants list of all plants
  * @param onNavigateToDetail Callback function to navigate to the detail view of a to-do item.
+ * @param onWateredClicked Callback function to handle the state change when the plant was watered.
  * @param modifier Modifier for custom styling and layout options.
  */
 @Composable
 fun TodoScreen(
-    onNavigateToDetail: (String) -> Unit,
-    modifier: Modifier = Modifier
+    plants: List<Plant>,
+    onNavigateToDetail: (Int) -> Unit,
+    onWateredClicked: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.padding(horizontal = 8.dp)
     ) {
         // Calculate the percentage of watering tasks done
-        val taskProgressPercentage = dummyPlants.count { it.isWatered } * 100 / dummyPlants.count()
+        val taskProgressPercentage = plants.count { it.isWatered } * 100 / plants.count()
         TodoHeader(
             taskProgressPercentage = taskProgressPercentage,
             Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
-        TodoList(onNavigateToDetail = onNavigateToDetail)
+        TodoList(
+            list = plants,
+            onNavigateToDetail = onNavigateToDetail,
+            onWateredClicked = onWateredClicked
+        )
     }
 }
 
@@ -54,11 +63,14 @@ fun TodoScreen(
  * Composable that displays a list of to-do items using a LazyColumn.
  *
  * @param onNavigateToDetail Callback function to navigate to the detail view of a to-do item.
+ * @param onWateredClicked Callback function to handle the state change when the plant was watered.
  * @param modifier Modifier for custom styling and layout options.
  */
 @Composable
 fun TodoList(
-    onNavigateToDetail: (String) -> Unit,
+    list: List<Plant>,
+    onNavigateToDetail: (Int) -> Unit,
+    onWateredClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -67,18 +79,19 @@ fun TodoList(
         modifier = modifier
             .fillMaxHeight()
     ) {
-        items(dummyPlants) { item ->
+        items(list) { item ->
             PlantCard(
                 drawable = item.imageId,
                 title = item.name,
                 subtitle = item.location,
-                onNavigateToDetail = onNavigateToDetail,
+                onClick = { onNavigateToDetail(item.id) },
                 modifier = Modifier.height(80.dp)
                 // instead of the content in the brackets below:
                 // cardEndContent = { WateringStateIconRow(...) }
             ) {
                 WateringStateIconRow(
                     isWateredState = item.isWatered,
+                    onClick = { onWateredClicked(item.id) },
                     modifier = Modifier.padding(end = 8.dp)
                 )
             }
@@ -121,5 +134,5 @@ fun TodoHeader(taskProgressPercentage: Int, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun TodoScreenPreview() {
-    TodoScreen(onNavigateToDetail = {})
+    TodoScreen(onNavigateToDetail = {}, plants = dummyPlants, onWateredClicked = {})
 }

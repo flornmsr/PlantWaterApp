@@ -1,15 +1,21 @@
 package ch.bfh.ti.plantwaterapp.ui.common
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ch.bfh.ti.plantwaterapp.PlantDetail
 import ch.bfh.ti.plantwaterapp.PlantOverview
 import ch.bfh.ti.plantwaterapp.PlantTodo
-import ch.bfh.ti.plantwaterapp.ui.plantdetail.DetailScreen
+import ch.bfh.ti.plantwaterapp.ui.plantdetail.PlantDetailViewModel
+import ch.bfh.ti.plantwaterapp.ui.plantdetail.PlantDetailsScreen
 import ch.bfh.ti.plantwaterapp.ui.plantoverview.PlantOverviewScreen
+import ch.bfh.ti.plantwaterapp.ui.plantoverview.PlantOverviewViewModel
+import ch.bfh.ti.plantwaterapp.ui.planttodo.PlantTodoViewModel
 import ch.bfh.ti.plantwaterapp.ui.planttodo.TodoScreen
 
 /**
@@ -32,9 +38,16 @@ fun PlantWaterAppNavHost(
 
         // extension function to easily add individual composable destinations
         composable(route = PlantTodo.route) {
+            // Create an instance of PlantTodoViewModel using the viewModel()
+            val viewModel = viewModel<PlantTodoViewModel>()
+            val plants = viewModel.plants
             //  actual UI to be displayed when you navigate to this destination
             TodoScreen(
-                onNavigateToDetail = { navController.navigateSingleTopTo("${PlantDetail.route}/$it") }
+                plants = plants,
+                onNavigateToDetail = { navController.navigateSingleTopTo("${PlantDetail.route}/$it") },
+                // call method to change state inside the viewmodel
+                // same as: onWateredClicked = { viewModel.changePlantWateringState(it) }
+                onWateredClicked = viewModel::changePlantWateringState
             )
         }
 
@@ -43,19 +56,31 @@ fun PlantWaterAppNavHost(
             arguments = PlantDetail.arguments // provide arguments. In this case only the plantId
         ) { navBackStackEntry ->
             // Retrieve the passed argument
-            val plantId = navBackStackEntry.arguments?.getString(PlantDetail.plantIdArg)
+            val plantId = navBackStackEntry.arguments?.getInt(PlantDetail.plantIdArg)
+            // Create an instance of PlantDetailViewModel using the viewModel()
+            val viewModel = viewModel<PlantDetailViewModel>()
+            // Collect the current state of the plant using collectAsState() (because we used MutableStateFlow in ViewModel)
+            val plant by viewModel.plant.collectAsState()
 
             // only when there is a plantId
             plantId?.let {
-                DetailScreen(
-                    onNavigateBack = { navController.navigateSingleTopTo(PlantTodo.route) },
-                    plantNane = it
+                PlantDetailsScreen(
+                    // navigate back to previous screen
+                    onNavigateBack = { navController.popBackStack() },
+                    plant = plant
                 )
             }
         }
 
         composable(route = PlantOverview.route) {
+            // Create an instance of PlantOverviewViewModel using the viewModel()
+            val viewModel = viewModel<PlantOverviewViewModel>()
+            val plants = viewModel.plants
+            val allLocations = viewModel.getAllLocations()
+
             PlantOverviewScreen(
+                allLocations = allLocations,
+                plants = plants,
                 onNavigateToDetail = { navController.navigateSingleTopTo("${PlantDetail.route}/$it") }
             )
         }
